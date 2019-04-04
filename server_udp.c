@@ -6,6 +6,15 @@
 #include <errno.h>
 #define SERVER_PORT 8888
 #define MAX_MSG_SIZE 1024
+
+void poweroff(void)
+{
+	printf("poweroff now\n");
+	system("halt"); 
+}
+void 
+
+
 int main(void)
 {
 //	int fcip_1,fcip_2,fcip_3,fcip_4;
@@ -41,4 +50,6 @@ int main(void)
 		close(sockfd);
 		exit(0);
 }
+
+
 
