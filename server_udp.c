@@ -12,12 +12,12 @@ int main(void)
 	char cmd[CMD_LENGTH];
 	char msgDetail[CMD_DETAIL_LENGTH];
 	char msgSend[MSG_SEND_LEN];
-	struct config_struct *currSettings;
-	struct config_struct *udpSettings;
+//	struct config_struct *currSettings;
+//	struct config_struct *udpSettings;
 	pthread_t tid1;
 	int thread_arg,err;
-	configStructInit(currSettings);
-	configStructInit(udpSettings);
+//	configStructInit(currSettings);
+//	configStructInit(udpSettings);
 	
 	sockfd = socket(AF_INET,SOCK_DGRAM,0);
 	if(sockfd<0)
@@ -38,7 +38,7 @@ int main(void)
 	}
 	//创建发送线程
 	thread_arg = sockfd;
-	err=pthread_create(&tid1,NULL,msg_send_thread,(void *)&thread_arg);
+	err=pthread_create(&tid1,NULL,(void*)msg_send_thread,(void *)&thread_arg);
     if(err!=0)
     {
         perror("pthread not create\n");

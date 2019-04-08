@@ -7,11 +7,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
-void test_func()
+int timeIsOver=0;
+void test_func(void)
 {
-    static int count = 0;
-
-    printf("count is %d\n", count++);
+	timeIsOver =1;
+	printf("
 }
 
 void init_sigaction()

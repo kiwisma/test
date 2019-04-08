@@ -1,5 +1,6 @@
-#include <fckfqcmd.h>
-
+#include "fckfqcmd.h"
+extern struct sockaddr_in addr;
+extern int addrlen;
 #ifdef READ_CONFIG
 int fcEthernetConfigRead(struct config_struct *destConfigSettings)
 {
@@ -13,7 +14,7 @@ void poweroff(void) //关机函数
 	printf("poweroff now\n");
 	system("halt"); 
 }
-#if 0
+#if 0 //初始化函数-备用
 void configStructInit(struct config_struct *configSettings)
 {
 	configSettings->channelNo = '0';
@@ -25,12 +26,13 @@ void configStructInit(struct config_struct *configSettings)
 	strcpy(configSettings->routeSet,"0");
 }
 #endif
-int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
+int fcConfigSet(unsigned int cmdtype,const char *channelNo,const char *msgDetail)
 {
 
 	char fileName[CONFIG_FILE_LEN]={FILENAME_PREFIX};
 	char linebuffer[CONFIG_LINE];
 	char buffer1[CONFIG_LINE],buffer2[CONFIG_LINE];
+	char configFile[CONFIG_ROW][CONFIG_LINE];
 	int fd;
 	int i=0,j;
 	int rowNum=0;
@@ -74,7 +76,7 @@ int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
 				case SET_NODENAME: 
 					if(strncmp(buffer1,NODENAME_PREFIX,strlen(NODENAME_PREFIX)) == 0)//Nodename处理部分
 					{
-					if(strncmp(msgDetail,buffer2))//判断nodename是否变化
+					if(strcmp(msgDetail,buffer2))//判断nodename是否变化
 					{
 						strcpy(buffer2,msgDetail);
 						buffer1[strlen(buffer1)] = '=';
@@ -90,7 +92,7 @@ int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
 				case SET_PORTNAME: 	
 				if(strncmp(buffer1,PORTNAME_PREFIX,strlen(PORTNAME_PREFIX)) == 0)//portname处理部分
 				{
-					if(strncmp(msgDetail,buffer2))//判断portname是否变化
+					if(strcmp(msgDetail,buffer2))//判断portname是否变化
 					{
 						strcpy(buffer2,msgDetail);
 						buffer1[strlen(buffer1)] = '=';
@@ -105,7 +107,7 @@ int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
 				case SET_NETMASK:
 					if(strncmp(buffer1,NETMASK_PREFIX,strlen(NETMASK_PREFIX)) == 0)//子网掩码处理部分
 					{
-						if(strncmp(msgDetail,buffer2))//判断子网掩码是否变化
+						if(strcmp(msgDetail,buffer2))//判断子网掩码是否变化
 						{
 							strcpy(buffer2,msgDetail);
 							buffer1[strlen(buffer1)] = '=';
@@ -121,7 +123,7 @@ int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
 				case SET_ROUTESWITCH:
 					if(strncmp(buffer1,ROUTESWITCH_PREFIX,strlen(ROUTESWITCH_PREFIX)) == 0)//判断路由是否打开
 					{
-						if(strncmp(msgDetail,buffer2))
+						if(strcmp(msgDetail,buffer2))
 						{
 							strcpy(buffer2,msgDetail);
 							buffer1[strlen(buffer1)] = '=';
@@ -137,7 +139,7 @@ int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
 				case SET_ROUTE:
 					if(strncmp(buffer1,ROUT_PREFIX,strlen(ROUT_PREFIX)) == 0)//路由关系设定部分
 					{
-						if(strncmp(msgDetail,buffer2))
+						if(strcmp(msgDetail,buffer2))
 						{
 							strcpy(buffer2,msgDetail);
 							buffer1[strlen(buffer1)] = '=';
@@ -242,7 +244,7 @@ int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail)
     return 0;
 }
 
-#if 0
+#if 0 //设置函数-备用
 int fcEthernetConfigSet(struct config_struct *destConfigSettings)
 {
 
@@ -588,7 +590,7 @@ int parsCmd(const char *cmd, const char *msgDetail,char *msg)
 	{
 		printf("set FC gtoup01 mode\n");
 		cmdtype = SET_GROUP01_MODE;
-		channelNo = CHANNEL_4;		
+		channelNo = CHANNEL_DEFAULT;		
 		group =1;
 		fcConfigSet(cmdtype,&channelNo,msgDetail);		
 		sendSetModeResult(group,ret,msg);
@@ -598,7 +600,7 @@ int parsCmd(const char *cmd, const char *msgDetail,char *msg)
 	{
 		printf("set FC gtoup23 mode\n");
 		cmdtype = SET_GROUP23_MODE;		
-		channelNo = CHANNEL_4;
+		channelNo = CHANNEL_DEFAULT;
 		group =2;
 		fcConfigSet(cmdtype,&channelNo,msgDetail);		
 		sendSetModeResult(group,ret,msg);		
@@ -683,10 +685,10 @@ void msg_send_thread(int *sockfd)
 		if(!ret)
 		{
 			
-			sendto(sockfd,configFile,strlen(configFile),0,(struct sockaddr *)(&addr),addrlen);
+			sendto(*sockfd,configFile,strlen(configFile),0,(struct sockaddr *)(&addr),addrlen);
 			sleep(2);
 		}
 		else
-			pthread_exit(0)
+			pthread_exit(0);
 	}
 }

@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <pthread.h>
 
 #define CONFIG_FILE_DETAIL_LEN 1024
 #define MAX_ROW_LEN			100
@@ -24,7 +24,7 @@
 #define ROUTESWITCH_LEN		2
 #define ROUTE_SET_LEN		50
 #define SERVER_PORT 		26896 //udp通信端口
-#define MAX_MSG_SIZE 		30
+#define MAX_MSG_SIZE 		50
 #define CMD_LENGTH			20
 #define CMD_DETAIL_LENGTH	50
 #define MSG_SEND_LEN		20
@@ -151,7 +151,7 @@ struct config_struct{
 	char routeSet[ROUTE_SET_LEN];
 };
 void poweroff(void); //关机函数
-int fcConfigSet(unsigned int cmdtype,const char *channelNo,char *msgDetail);
+int fcConfigSet(unsigned int cmdtype,const char *channelNo,const char *msgDetail);
 void sendFcIpSetResult(char channelNo, int ret, char *msg);
 void sendSetModeResult(int group, int ret, char *msg);
 void sendPortNameSetResult(char channelNo,int ret,char *msg);
