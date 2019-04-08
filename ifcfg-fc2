@@ -1,0 +1,5 @@
+Node_Name="BXKFQ_00"
+Port_Name="KF_Port2"
+fcIpAddr=192.9.200.155
+netMask=255.255.255.0
+routeSwitch=ON

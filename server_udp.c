@@ -4,16 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
-#define SERVER_PORT 8888
-#define MAX_MSG_SIZE 1024
-
-void poweroff(void)
-{
-	printf("poweroff now\n");
-	system("halt"); 
-}
-void 
-
+#include "fckfqcmd.h"
 
 int main(void)
 {
@@ -21,7 +12,12 @@ int main(void)
 	int sockfd,addrlen,n;
 	struct sockaddr_in addr;
 	char msg[MAX_MSG_SIZE];
-	char fileName[CONFIG_FILE_LEN]={"ifcfg-fc"};
+	struct config_struct *currSettings;
+	struct config_struct *udpSettings;
+	
+	configStructInit(currSettings);
+	configStructInit(udpSettings);
+	
 	sockfd = socket(AF_INET,SOCK_DGRAM,0);
 	if(sockfd<0)
 	{
@@ -38,6 +34,8 @@ int main(void)
 		fprintf(stderr,"Bind error %s\n",strerror(errno));
 		exit(1);
 	}
+	
+	
 	while(1)
 	{
 		bzero(msg,MAX_MSG_SIZE);
@@ -47,8 +45,9 @@ int main(void)
 		printf("server endpoint input message :%s",msg);
 		sendto(sockfd,msg,n,0,(struct sockaddr *)(&addr),addrlen);
 	}
-		close(sockfd);
-		exit(0);
+	
+	close(sockfd);
+	exit(0);
 }
 
 
